@@ -3,11 +3,11 @@ from langchain_openai import OpenAI
 from colorama import Fore
 
 load_dotenv()
-
+llm = OpenAI()
 
 def generate(text):
     """ generate text based on the input """
-    pass
+    return llm.invoke(text)
 
 
 def start():
