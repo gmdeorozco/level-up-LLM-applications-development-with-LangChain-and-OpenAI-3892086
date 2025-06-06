@@ -1,54 +1,44 @@
-from dotenv import load_dotenv
-from langchain_openai import OpenAI
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings, OpenAI
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
-from colorama import Fore
+from langchain_core.runnables import RunnablePassthrough
+
+
+from dotenv import load_dotenv
 
 load_dotenv()
-llm = OpenAI()
+model = OpenAI()
+template = """Answer the question based only on the following context:
+{context}
 
-prompt_template = ChatPromptTemplate.from_template("tell me a short joke about {topic}")
-output_parser = StrOutputParser()
+Question: {question}
+"""
 
-def generate(text):
-    """ generate text based on the input """
-    chain = prompt_template | llm | output_parser
-    return chain.invoke({"topic": text})
+prompt = ChatPromptTemplate.from_template(template)
 
+vectorstore = FAISS.from_texts(
+    ["harrison worked at kensho"], embedding=OpenAIEmbeddings()
+)
 
-def start():
-    instructions = (
-        "Type your question and press ENTER. Type 'x' to go back to the MAIN menu.\n"
-    )
-    print(Fore.BLUE + "\n\x1B[3m" + instructions + "\x1B[0m" + Fore.RESET)
+query = "where did harrison work?"
+# docs = vectorstore.similarity_search(query, top_k=1)
+# print(docs[0].page_content)
 
-    print("MENU")
-    print("====")
-    print("[1]- Ask a question")
-    print("[2]- Exit")
-    choice = input("Enter your choice: ")
-    if choice == "1":
-        ask()
-    elif choice == "2":
-        print("Goodbye!")
-        exit()
-    else:
-        print("Invalid choice")
-        start()
+#querying as retriever
+# retriever = vectorstore.as_retriever()
+# docs = retriever.invoke(query,top_k=1)
+# print(docs[0].page_content)
 
+retriever = vectorstore.as_retriever()
+retrieval_chain = (
+    {
+        "context": retriever, "question": RunnablePassthrough(),
+    } 
+    | prompt 
+    | model
+    | StrOutputParser()
+)
 
-def ask():
-    while True:
-        user_input = input("Q: ")
-        # Exit
-        if user_input == "x":
-            start()
-        else:
-
-            response = generate(user_input)
-            print(Fore.BLUE + f"A: " + response + Fore.RESET)
-            print(Fore.WHITE + "\n-------------------------------------------------")
-
-
-if __name__ == "__main__":
-    start()
+response = retrieval_chain.invoke(query)
+print(response)
