@@ -48,18 +48,32 @@ qa_prompt = ChatPromptTemplate.from_messages(
 )
 
 # indexing
+documents = TextLoader("exercise-files/03/2/docs/faq.txt").load()
+text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0, separator=".")
+splits = text_splitter.split_documents(documents)
+db = Chroma.from_documents(splits, OpenAIEmbeddings())
+retriever = db.as_retriever()
 
 
 # Retrieve chat history
-
+history_aware_retriever = create_history_aware_retriever( llm, retriever,contextualize_q_prompt)
+    
 # Retrieve and generate 
-
+question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
 def generate_response(query):
     """ Generate a response to a user query"""
-    pass
+    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+    return rag_chain.invoke({
+        "input": query,
+        "chat_history": chat_history
+    })
+
 
 
 def query(query):
     """ Query and generate a response"""
-    return generate_response(query)
+    response = generate_response(query)
+    chat_history.extend([HumanMessage(content=query) ,response["answer"]])
+    
+    return response
