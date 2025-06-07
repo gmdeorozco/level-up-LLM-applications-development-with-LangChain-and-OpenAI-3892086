@@ -48,7 +48,7 @@ qa_prompt = ChatPromptTemplate.from_messages(
 )
 
 # indexing
-documents = TextLoader("./docs/faq.txt").load()
+documents = TextLoader("exercise-files/04/docs/faq.txt").load()
 text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0, separator="\n")
 splits = text_splitter.split_documents(documents)
 db = Chroma.from_documents(documents, OpenAIEmbeddings())
