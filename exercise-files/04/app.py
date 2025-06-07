@@ -2,7 +2,9 @@ import streamlit as st
 import openai
 import os
 from dotenv import load_dotenv
-from main import query
+from query import query
+
+
 
 load_dotenv()
 
@@ -42,13 +44,14 @@ def start_chat():
             st.markdown(prompt)
 
         # Generate response from Chat models
-        
+        response = query(prompt)
+
 
         # message_placeholder.markdown(response)
         with st.chat_message("assistant"):
-            st.markdown(response)
+            st.markdown(response["answer"])
         # Add assistant's response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.session_state.messages.append({"role": "assistant", "content": response["answer"]})
 
 
 if __name__ == "__main__":
