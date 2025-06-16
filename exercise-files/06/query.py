@@ -26,7 +26,7 @@ if client:
     print(client.list_database_names())
 
 # Load the sample data (PDF document)
-loader = PyPDFLoader("https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4HkJP")
+loader = PyPDFLoader("imitacion_de_cristo.pdf")
 data = loader.load()
 
 # Split PDF into smaller documents
@@ -40,15 +40,16 @@ print(docs[0])
 vector_store = MongoDBAtlasVectorSearch.from_documents(
     documents=docs,
     embedding=OpenAIEmbeddings(disallowed_special=()),
-    collection=COLLECTION_NAME,
+    collection=collection,
     index_name=ATLAS_VECTOR_SEARCH_INDEX_NAME
 )
 
 
 def query_data(query):
     """run vector search queries"""
-    # results = vector_search.similarity_search(query)
-    # print(results)
+    results = vector_store.similarity_search(query)
+    print(results)
+    return results[0].page_content
 
-query_data("MongoDB Atlas Sec")
+query_data("El Pecado")
 
