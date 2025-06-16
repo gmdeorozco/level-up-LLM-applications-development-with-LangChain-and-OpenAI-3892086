@@ -1,9 +1,5 @@
 from colorama import Fore
-<<<<<<< HEAD
-from query import query_data 
-=======
 from query import query_data
->>>>>>> 67ba868cd4bd27b78fe537cf299c6b9489119f2e
 
 
 def start():

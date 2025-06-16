@@ -26,7 +26,9 @@ if client:
     print(client.list_database_names())
 
 # Load the sample data (PDF document)
+
 loader = PyPDFLoader("imitacion_de_cristo.pdf")
+
 data = loader.load()
 
 # Split PDF into smaller documents
@@ -51,5 +53,6 @@ def query_data(query):
     print(results)
     return results[0].page_content
 
-query_data("El Pecado")
+
+# query_data("El Pecado")
 
