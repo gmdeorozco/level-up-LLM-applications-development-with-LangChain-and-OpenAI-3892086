@@ -29,11 +29,11 @@ if client:
     print(client.list_database_names())
 
 # Load the sample data (PDF document)
-loader = PyPDFLoader("https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4HkJP")
+loader = PyPDFLoader("imitation_of_the_christ.pdf")
 data = loader.load()
 
 # Split PDF into smaller documents
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=20)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=20)
 docs = text_splitter.split_documents(data)
 
 # Print the first document
@@ -71,17 +71,14 @@ rag_chain = (
     {"context": retriever, "question": RunnablePassthrough() }
     | custom_rag_prompt
     | llm
-    | StrOutputParser()
+    |  StrOutputParser()
 )
+
 
 # Prompt the chain to answer a question
 def query_data(query):
-    question = "How can I secure my MongoDB Atlas cluster?"
+    question = "dame algo sobre la muerte"
     answer = rag_chain.invoke(query)
-    print("Question: " + question)
-    print("Answer: " + answer)
     return answer
-
-
 
 

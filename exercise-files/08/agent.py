@@ -15,9 +15,27 @@ load_dotenv()
 # load the LLM
 
 # define the tool
+@tool
+def get_word_length(word: str) -> int:
+    """Returns the length of a word."""
+    return len(word)
+
+get_word_length("abc")
+
+@tool
+def vector_search_query(query):
+    return rag_chain.invoke(query)
+
 
 # create the prompt
 
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system","You are a  powerful assistant but don't know current events"),
+        ("user", "{input}"),
+        MessagesPlaceholder(variable_name="agent_scratchpad")
+    ]
+)
 # bind the tool to the LLM
 
 # create the agent

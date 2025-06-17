@@ -19,7 +19,7 @@ COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 ATLAS_VECTOR_SEARCH_INDEX_NAME = os.getenv("ATLAS_VECTOR_SEARCH_INDEX_NAME")
 
 # Connect to your Atlas cluster
-client = MongoClient("mongodb+srv://sandy:QbFNnJL2o6SEO0Vo@clusterlangchain.es7v444.mongodb.net/?retryWrites=true&w=majority&appName=ClusterLangChain")
+client = MongoClient("mongodb+srv://ernestoorozconlp:pClHVqey84A9DKAd@clusterlangchain.es7v444.mongodb.net/?retryWrites=true&w=majority&appName=ClusterLangChain")
 
 # Define collection and index name
 collection = client[DB_NAME][COLLECTION_NAME]
@@ -29,7 +29,7 @@ collection = client[DB_NAME][COLLECTION_NAME]
     # print(client.list_database_names())
 
 # Load the sample data (PDF document)
-loader = PyPDFLoader("https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4HkJP")
+loader = PyPDFLoader("imitation_of_the_christ.pdf")
 data = loader.load()
 
 # Split PDF into smaller documents
@@ -61,5 +61,10 @@ custom_rag_prompt = PromptTemplate.from_template(template)
 
 # Construct a chain to answer questions on your data
 
-
+reg_chain = (
+    {"context": retriever, "question": RunnablePassthrough()}
+    | custom_rag_prompt
+    | model
+    | StrOutputParser()
+)
 
